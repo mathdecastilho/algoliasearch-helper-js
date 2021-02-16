@@ -115,7 +115,7 @@ var requestBuilder = {
         hierarchicalRootLevel
       );
     } else {
-      additionalParams.facets = facet;
+      additionalParams.facets = facet.split('|');
     }
 
     if (numericFilters.length > 0) {
