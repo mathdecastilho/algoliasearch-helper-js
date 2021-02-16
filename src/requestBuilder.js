@@ -195,9 +195,12 @@ var requestBuilder = {
     forEach(state.disjunctiveFacetsRefinements, function(facetValues, facetName) {
       if (facetName === facet || !facetValues || facetValues.length === 0) return;
       var orFilters = [];
+      var facetNames = facetName.split('|');
 
       forEach(facetValues, function(facetValue) {
-        orFilters.push(facetName + ':' + facetValue);
+        forEach(facetNames, function(localFacetName) {
+          orFilters.push(localFacetName + ':' + facetValue);
+        });
       });
 
       facetFilters.push(orFilters);
