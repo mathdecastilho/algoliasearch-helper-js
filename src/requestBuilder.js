@@ -57,13 +57,19 @@ var requestBuilder = {
     var facets = state.facets
       .concat(state.disjunctiveFacets)
       .concat(requestBuilder._getHitsHierarchicalFacetsAttributes(state));
+    var newFacets = [];
 
+    forEach(facets, function(facet) {
+      forEach(facet.split('|'), function(localFacet) {
+        newFacets.push(localFacet);
+      });
+    });
 
     var facetFilters = requestBuilder._getFacetFilters(state);
     var numericFilters = requestBuilder._getNumericFilters(state);
     var tagFilters = requestBuilder._getTagFilters(state);
     var additionalParams = {
-      facets: facets,
+      facets: newFacets,
       tagFilters: tagFilters
     };
 
