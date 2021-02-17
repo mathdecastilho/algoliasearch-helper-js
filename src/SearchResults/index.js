@@ -375,28 +375,30 @@ function SearchResults(state, results) {
         exhaustive: mainSubResponse.exhaustiveFacetsCount
       };
     } else {
-      var isFacetDisjunctive = indexOf(state.disjunctiveFacets, facetKey) !== -1;
-      var isFacetConjunctive = indexOf(state.facets, facetKey) !== -1;
-      var position;
+      forEach(facetKey.split('|'), function(localFacetKey) {
+        var isFacetDisjunctive = indexOf(state.disjunctiveFacets, localFacetKey) !== -1;
+        var isFacetConjunctive = indexOf(state.facets, localFacetKey) !== -1;
+        var position;
 
-      if (isFacetDisjunctive) {
-        position = disjunctiveFacetsIndices[facetKey];
-        self.disjunctiveFacets[position] = {
-          name: facetKey,
-          data: facetValueObject,
-          exhaustive: mainSubResponse.exhaustiveFacetsCount
-        };
-        assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, facetKey);
-      }
-      if (isFacetConjunctive) {
-        position = facetsIndices[facetKey];
-        self.facets[position] = {
-          name: facetKey,
-          data: facetValueObject,
-          exhaustive: mainSubResponse.exhaustiveFacetsCount
-        };
-        assignFacetStats(self.facets[position], mainSubResponse.facets_stats, facetKey);
-      }
+        if (isFacetDisjunctive) {
+          position = disjunctiveFacetsIndices[localFacetKey];
+          self.disjunctiveFacets[position] = {
+            name: localFacetKey,
+            data: facetValueObject,
+            exhaustive: mainSubResponse.exhaustiveFacetsCount
+          };
+          assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, localFacetKey);
+        }
+        if (isFacetConjunctive) {
+          position = facetsIndices[localFacetKey];
+          self.facets[position] = {
+            name: localFacetKey,
+            data: facetValueObject,
+            exhaustive: mainSubResponse.exhaustiveFacetsCount
+          };
+          assignFacetStats(self.facets[position], mainSubResponse.facets_stats, localFacetKey);
+        }
+      });
     }
   });
 
