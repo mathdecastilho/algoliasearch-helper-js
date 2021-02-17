@@ -350,9 +350,14 @@ function SearchResults(state, results) {
   this.facets = [];
 
   var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
+  console.warn('disjunctiveFacets', disjunctiveFacets);
 
   var facetsIndices = getIndices(state.facets);
+  console.warn('facetsIndices', facetsIndices);
+  console.warn('state.facets', state.facets);
+  console.warn('state.disjunctiveFacets', state.disjunctiveFacets);
   var disjunctiveFacetsIndices = getIndices(state.disjunctiveFacets);
+  console.warn('disjunctiveFacetsIndices', disjunctiveFacetsIndices);
   var nextDisjunctiveResult = 1;
 
   var self = this;
@@ -375,30 +380,39 @@ function SearchResults(state, results) {
         exhaustive: mainSubResponse.exhaustiveFacetsCount
       };
     } else {
-      forEach(facetKey.split('|'), function(localFacetKey) {
-        var isFacetDisjunctive = indexOf(state.disjunctiveFacets, localFacetKey) !== -1;
-        var isFacetConjunctive = indexOf(state.facets, localFacetKey) !== -1;
-        var position;
+      var disjuntiveFacets = {};
 
-        if (isFacetDisjunctive) {
-          position = disjunctiveFacetsIndices[localFacetKey];
-          self.disjunctiveFacets[position] = {
-            name: localFacetKey,
-            data: facetValueObject,
-            exhaustive: mainSubResponse.exhaustiveFacetsCount
-          };
-          assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, localFacetKey);
-        }
-        if (isFacetConjunctive) {
-          position = facetsIndices[localFacetKey];
-          self.facets[position] = {
-            name: localFacetKey,
-            data: facetValueObject,
-            exhaustive: mainSubResponse.exhaustiveFacetsCount
-          };
-          assignFacetStats(self.facets[position], mainSubResponse.facets_stats, localFacetKey);
-        }
+      forEach(Object.keys(state.disjunctiveFacets), function(disjunctiveFacetKey) {
+        forEach(disjunctiveFacetKey.split('|'), function(disjunctiveFacetKeySplited) {
+          disjuntiveFacets[disjunctiveFacetKeySplited] = state.disjunctiveFacets[disjunctiveFacetKey];
+        });
       });
+
+      console.warn('state.disjunctiveFacets', state.disjunctiveFacets);
+      console.warn('disjuntiveFacets', disjuntiveFacets);
+
+      var isFacetDisjunctive = indexOf(disjunctiveFacets, facetKey) !== -1;
+      var isFacetConjunctive = indexOf(state.facets, facetKey) !== -1;
+      var position;
+
+      if (isFacetDisjunctive) {
+        position = disjunctiveFacetsIndices[facetKey];
+        self.disjunctiveFacets[position] = {
+          name: facetKey,
+          data: facetValueObject,
+          exhaustive: mainSubResponse.exhaustiveFacetsCount
+        };
+        assignFacetStats(self.disjunctiveFacets[position], mainSubResponse.facets_stats, facetKey);
+      }
+      if (isFacetConjunctive) {
+        position = facetsIndices[facetKey];
+        self.facets[position] = {
+          name: facetKey,
+          data: facetValueObject,
+          exhaustive: mainSubResponse.exhaustiveFacetsCount
+        };
+        assignFacetStats(self.facets[position], mainSubResponse.facets_stats, facetKey);
+      }
     }
   });
 
