@@ -349,15 +349,24 @@ function SearchResults(state, results) {
    */
   this.facets = [];
 
-  var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
-  console.warn('disjunctiveFacets', disjunctiveFacets);
+  var disjunctiveFacets = [];
+
+  forEach(state.getRefinedDisjunctiveFacets(), function(localDisjunctiveFacet) {
+    forEach(localDisjunctiveFacet.split('|'), function(localDisjunctiveFacetSplitted) {
+      disjunctiveFacets.push(localDisjunctiveFacetSplitted);
+    });
+  });
+
+  var splittedDisjunctiveFacets = [];
+
+  forEach(state.disjunctiveFacets, function(localDisjunctiveFacet) {
+    forEach(localDisjunctiveFacet.split('|'), function(localDisjunctivefacetSplitted) {
+      splittedDisjunctiveFacets.push(localDisjunctivefacetSplitted);
+    });
+  });
 
   var facetsIndices = getIndices(state.facets);
-  console.warn('facetsIndices', facetsIndices);
-  console.warn('state.facets', state.facets);
-  console.warn('state.disjunctiveFacets', state.disjunctiveFacets);
-  var disjunctiveFacetsIndices = getIndices(state.disjunctiveFacets);
-  console.warn('disjunctiveFacetsIndices', disjunctiveFacetsIndices);
+  var disjunctiveFacetsIndices = getIndices(splittedDisjunctiveFacets);
   var nextDisjunctiveResult = 1;
 
   var self = this;
@@ -380,18 +389,7 @@ function SearchResults(state, results) {
         exhaustive: mainSubResponse.exhaustiveFacetsCount
       };
     } else {
-      var disjuntiveFacets = {};
-
-      forEach(Object.keys(state.disjunctiveFacets), function(disjunctiveFacetKey) {
-        forEach(disjunctiveFacetKey.split('|'), function(disjunctiveFacetKeySplited) {
-          disjuntiveFacets[disjunctiveFacetKeySplited] = state.disjunctiveFacets[disjunctiveFacetKey];
-        });
-      });
-
-      console.warn('state.disjunctiveFacets', state.disjunctiveFacets);
-      console.warn('disjuntiveFacets', disjuntiveFacets);
-
-      var isFacetDisjunctive = indexOf(disjunctiveFacets, facetKey) !== -1;
+      var isFacetDisjunctive = indexOf(splittedDisjunctiveFacets, facetKey) !== -1;
       var isFacetConjunctive = indexOf(state.facets, facetKey) !== -1;
       var position;
 
