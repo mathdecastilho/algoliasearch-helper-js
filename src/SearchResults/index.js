@@ -349,13 +349,7 @@ function SearchResults(state, results) {
    */
   this.facets = [];
 
-  var disjunctiveFacets = [];
-
-  forEach(state.getRefinedDisjunctiveFacets(), function(localDisjunctiveFacet) {
-    forEach(localDisjunctiveFacet.split('|'), function(localDisjunctiveFacetSplitted) {
-      disjunctiveFacets.push(localDisjunctiveFacetSplitted);
-    });
-  });
+  var disjunctiveFacets = state.getRefinedDisjunctiveFacets();
 
   var splittedDisjunctiveFacets = [];
 
